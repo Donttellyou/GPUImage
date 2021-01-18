@@ -25,7 +25,7 @@
 }
 
 @property (assign, nonatomic) NSUInteger aspectRatio;
-
+@property (assign, nonatomic) CGRect viewBounds;
 // Initialization and teardown
 - (void)commonInit;
 
@@ -132,7 +132,7 @@
 
 - (void)layoutSubviews {
     [super layoutSubviews];
-    
+    self.viewBounds =self.bounds;
     // The frame buffer needs to be trashed and re-created when the view size changes.
     if (!CGSizeEqualToSize(self.bounds.size, boundsSizeAtFrameBufferEpoch) &&
         !CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
@@ -236,10 +236,10 @@
     
     if ([NSThread isMainThread] == NO) {
         dispatch_async(dispatch_get_main_queue(), ^{
-            [self my_recalculateViewGeometryWithSize:self.bounds.size];
+            [self my_recalculateViewGeometryWithSize:self.viewBounds.size];
         });
     } else {
-        [self my_recalculateViewGeometryWithSize:self.bounds.size];
+        [self my_recalculateViewGeometryWithSize:self.viewBounds.size];
     }
 }
 
@@ -253,7 +253,7 @@
             //    CGFloat imageAspectRatio = inputImageSize.width / inputImageSize.height;
             //    CGFloat viewAspectRatio = currentViewSize.width / currentViewSize.height;
             
-            CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(inputImageSize, self.bounds);
+            CGRect insetRect = AVMakeRectWithAspectRatioInsideRect(inputImageSize, self.viewBounds);
             
             switch(_fillMode)
             {
@@ -292,12 +292,7 @@
     //        1.0f,  1.0f,
     //    };
 }
-复制代码
 
-作者：ALittleNasty
-链接：https://juejin.cn/post/6844904142364770318
-来源：掘金
-著作权归作者所有。商业转载请联系作者获得授权，非商业转载请注明出处。
 
 - (void)setBackgroundColorRed:(GLfloat)redComponent green:(GLfloat)greenComponent blue:(GLfloat)blueComponent alpha:(GLfloat)alphaComponent;
 {
