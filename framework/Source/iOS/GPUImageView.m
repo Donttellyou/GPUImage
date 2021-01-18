@@ -134,13 +134,13 @@
     [super layoutSubviews];
     self.viewBounds =self.bounds;
     // The frame buffer needs to be trashed and re-created when the view size changes.
-    if (!CGSizeEqualToSize(self.bounds.size, boundsSizeAtFrameBufferEpoch) &&
-        !CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
+    if (!CGSizeEqualToSize(self.viewBounds.size, boundsSizeAtFrameBufferEpoch) &&
+        !CGSizeEqualToSize(self.viewBounds.size, CGSizeZero)) {
         runSynchronouslyOnVideoProcessingQueue(^{
             [self destroyDisplayFramebuffer];
             [self createDisplayFramebuffer];
         });
-    } else if (!CGSizeEqualToSize(self.bounds.size, CGSizeZero)) {
+    } else if (!CGSizeEqualToSize(self.viewBounds.size, CGSizeZero)) {
         [self recalculateViewGeometry];
     }
 }
@@ -186,8 +186,8 @@
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_RENDERBUFFER, displayRenderbuffer);
 	
     __unused GLuint framebufferCreationStatus = glCheckFramebufferStatus(GL_FRAMEBUFFER);
-    NSAssert(framebufferCreationStatus == GL_FRAMEBUFFER_COMPLETE, @"Failure with display framebuffer generation for display of size: %f, %f", self.bounds.size.width, self.bounds.size.height);
-    boundsSizeAtFrameBufferEpoch = self.bounds.size;
+    NSAssert(framebufferCreationStatus == GL_FRAMEBUFFER_COMPLETE, @"Failure with display framebuffer generation for display of size: %f, %f", self.viewBounds.size.width, self.viewBounds.size.height);
+    boundsSizeAtFrameBufferEpoch = self.viewBounds.size;
 
     [self recalculateViewGeometry];
 }
@@ -446,12 +446,12 @@
 {
     if ([self respondsToSelector:@selector(setContentScaleFactor:)])
     {
-        CGSize pointSize = self.bounds.size;
+        CGSize pointSize = self.viewBounds.size;
         return CGSizeMake(self.contentScaleFactor * pointSize.width, self.contentScaleFactor * pointSize.height);
     }
     else
     {
-        return self.bounds.size;
+        return self.viewBounds.size;
     }
 }
 
