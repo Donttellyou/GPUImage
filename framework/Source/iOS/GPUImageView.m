@@ -226,29 +226,15 @@
     glBindRenderbuffer(GL_RENDERBUFFER, displayRenderbuffer);
     [[GPUImageContext sharedImageProcessingContext] presentBufferForDisplay];
 }
-
 #pragma mark -
 #pragma mark Handling fill mode
 
 - (void)recalculateViewGeometry
 {
-    NSLog(@"Is main thread: %@", [NSThread isMainThread] ? @"YES" : @"NO");
-    
-    if ([NSThread isMainThread] == NO) {
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self my_recalculateViewGeometryWithSize:self.viewBounds.size];
-        });
-    } else {
-        [self my_recalculateViewGeometryWithSize:self.viewBounds.size];
-    }
-}
-
-- (void)my_recalculateViewGeometryWithSize:(CGSize)size
-{
     runSynchronouslyOnVideoProcessingQueue(^{
             CGFloat heightScaling, widthScaling;
             
-            CGSize currentViewSize = size;
+            CGSize currentViewSize = self.viewBounds.size;
             
             //    CGFloat imageAspectRatio = inputImageSize.width / inputImageSize.height;
             //    CGFloat viewAspectRatio = currentViewSize.width / currentViewSize.height;
@@ -292,6 +278,7 @@
     //        1.0f,  1.0f,
     //    };
 }
+
 
 
 - (void)setBackgroundColorRed:(GLfloat)redComponent green:(GLfloat)greenComponent blue:(GLfloat)blueComponent alpha:(GLfloat)alphaComponent;
